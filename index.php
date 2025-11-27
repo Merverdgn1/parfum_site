@@ -24,6 +24,9 @@
             $cartCount += $item['qty'];
         }
     }
+
+    // Şu anki URL (favoriden geri dönebilmek için)
+    $currentUrl = $_SERVER['REQUEST_URI'] ?? 'index.php';
 ?>
 <!doctype html>
 <html lang="tr">
@@ -70,6 +73,9 @@
                     <?php if (isset($_SESSION['user'])): ?>
                         <li class="nav-item">
                             <a class="nav-link" href="my_orders.php">Siparişlerim</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="my_favorites.php">Favorilerim</a>
                         </li>
                     <?php endif; ?>
                 </ul>
@@ -242,14 +248,26 @@
                                     </p>
 
                                     <div class="d-flex gap-2 mt-auto">
-                                        <a href="product.php?id=<?php echo $product['id']; ?>" 
+                                        <a href="product.php?id=<?php echo (int)$product['id']; ?>" 
                                            class="btn btn-sm btn-primary">
                                             Detay
                                         </a>
-                                        <a href="cart.php?action=add&id=<?php echo $product['id']; ?>" 
+                                        <a href="cart.php?action=add&id=<?php echo (int)$product['id']; ?>" 
                                            class="btn btn-sm btn-outline-primary">
                                             Sepete Ekle
                                         </a>
+
+                                        <?php if (isset($_SESSION['user'])): ?>
+                                            <a href="favorites.php?action=add&id=<?php echo (int)$product['id']; ?>&redirect=<?php echo urlencode($currentUrl); ?>"
+                                               class="btn btn-sm btn-outline-warning">
+                                                ★ Favori
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="login.php?must_login=1"
+                                               class="btn btn-sm btn-outline-warning">
+                                                ★ Favori
+                                            </a>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>

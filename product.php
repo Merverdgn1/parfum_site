@@ -35,6 +35,41 @@ if (isset($_SESSION['user']) && isset($mysqli)) {
         $isAdmin = true;
     }
 }
+
+/* ===== FAVORİLER İÇİN EK KISIM ===== */
+
+// Şu anki URL (favoriden geri dönebilmek için)
+$currentUrl = $_SERVER['REQUEST_URI'] ?? 'index.php';
+
+// Kullanıcı giriş yaptıysa, bu ürün favorilerde mi kontrol et
+$inFavorites = false;
+if (isset($_SESSION['user']) && isset($mysqli)) {
+    $userId = (int)$_SESSION['user']['id'];
+
+    $stmtFav = $mysqli->prepare("
+        SELECT 1 FROM favorites
+        WHERE user_id = ? AND product_id = ?
+        LIMIT 1
+    ");
+    $stmtFav->bind_param("ii", $userId, $productId);
+    $stmtFav->execute();
+    $resFav = $stmtFav->get_result()->fetch_assoc();
+    $stmtFav->close();
+
+    if ($resFav) {
+        $inFavorites = true;
+    }
+}
+
+/* Resim yolu (index.php ile aynı mantıkta olsun) */
+$imageFile = trim($selectedProduct['image'] ?? '');
+if ($imageFile === '') {
+    $imagePath = 'assets/img/placeholder.jpg';
+} elseif (preg_match('#^https?://#i', $imageFile)) {
+    $imagePath = $imageFile;
+} else {
+    $imagePath = 'assets/img/' . $imageFile;
+}
 ?>
 <!doctype html>
 <html lang="tr">
@@ -84,6 +119,9 @@ if (isset($_SESSION['user']) && isset($mysqli)) {
                     <li class="nav-item">
                         <a class="nav-link" href="my_orders.php">Siparişlerim</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="my_favorites.php">Favorilerim</a>
+                    </li>
                 <?php endif; ?>
             </ul>
 
@@ -96,10 +134,10 @@ if (isset($_SESSION['user']) && isset($mysqli)) {
                     <?php endif; ?>
 
                     <li class="nav-item d-flex align-items-center">
-    <span class="navbar-text me-2 mb-0">
-        Merhaba, <?php echo htmlspecialchars($_SESSION['user']['name']); ?>
-    </span>
-</li>
+                        <span class="navbar-text me-2 mb-0">
+                            Merhaba, <?php echo htmlspecialchars($_SESSION['user']['name']); ?>
+                        </span>
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">Çıkış</a>
@@ -120,14 +158,21 @@ if (isset($_SESSION['user']) && isset($mysqli)) {
 <!-- ÜRÜN DETAY -->
 <main class="py-5">
     <div class="container">
-        <a href="index.php#products" class="btn btn-link mb-3">&laquo; Geri dön</a>
+
+        <!-- Şık geri butonu -->
+        <div class="d-flex mb-4">
+            <a href="index.php#products" class="btn btn-outline-secondary btn-sm">
+                <span class="me-1">&larr;</span> Ürünlere geri dön
+            </a>
+        </div>
 
         <div class="row g-4">
             <div class="col-md-5">
                 <img 
-                    src="<?php echo $selectedProduct['image']; ?>" 
+                    src="<?php echo htmlspecialchars($imagePath); ?>" 
                     alt="<?php echo htmlspecialchars($selectedProduct['name']); ?>" 
                     class="img-fluid rounded shadow-sm"
+                    onerror="this.onerror=null; this.src='assets/img/placeholder.jpg';"
                 >
             </div>
 
@@ -151,13 +196,31 @@ if (isset($_SESSION['user']) && isset($mysqli)) {
                 </p>
 
                 <div class="d-flex gap-2 mt-4">
-                    <a href="cart.php?action=add&id=<?php echo $selectedProduct['id']; ?>" 
+                    <!-- Sepete ekle -->
+                    <a href="cart.php?action=add&id=<?php echo (int)$selectedProduct['id']; ?>" 
                        class="btn btn-primary btn-lg">
                         Sepete Ekle
                     </a>
-                    <button class="btn btn-outline-secondary btn-lg" disabled>
-                        Favorilere Ekle (şimdilik çalışmıyor)
-                    </button>
+
+                    <!-- Favori butonu -->
+                    <?php if (isset($_SESSION['user'])): ?>
+                        <?php if ($inFavorites): ?>
+                            <a href="favorites.php?action=remove&id=<?php echo (int)$selectedProduct['id']; ?>&redirect=<?php echo urlencode($currentUrl); ?>"
+                               class="btn btn-outline-danger btn-lg">
+                                Favorilerden Çıkar
+                            </a>
+                        <?php else: ?>
+                            <a href="favorites.php?action=add&id=<?php echo (int)$selectedProduct['id']; ?>&redirect=<?php echo urlencode($currentUrl); ?>"
+                               class="btn btn-outline-warning btn-lg">
+                                ★ Favorilere Ekle
+                            </a>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <a href="login.php?must_login=1"
+                           class="btn btn-outline-warning btn-lg">
+                            ★ Favorilere Ekle (Giriş Yap)
+                        </a>
+                    <?php endif; ?>
                 </div>
 
                 <hr class="my-4">

@@ -241,7 +241,7 @@ if (isset($_SESSION['cart'])) {
                                     <th>Kategori</th>
                                     <th>Fiyat</th>
                                     <th>Görsel</th>
-                                    <th></th>
+                                    <th>İşlemler</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -271,7 +271,11 @@ if (isset($_SESSION['cart'])) {
                                             >
                                         </td>
                                         <td>
-                                            <a href="admin_products.php?action=delete&id=<?php echo $p['id']; ?>"
+                                            <a href="admin_product_edit.php?id=<?php echo (int)$p['id']; ?>"
+                                               class="btn btn-sm btn-primary me-1">
+                                                Düzenle
+                                            </a>
+                                            <a href="admin_products.php?action=delete&id=<?php echo (int)$p['id']; ?>"
                                                class="btn btn-sm btn-outline-danger"
                                                onclick="return confirm('Bu ürünü silmek istediğine emin misin?');">
                                                 Sil
