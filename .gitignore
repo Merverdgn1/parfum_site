@@ -1,0 +1,23 @@
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
+
+# VS Code ayarları
+.vscode/
+
+# IDE klasörleri
+.idea/
+
+# PHP / Composer (ileride kullanırsan)
+vendor/
+
+# Node.js (ileride kullanırsan)
+node_modules/
+
+# Ortam dosyaları (şifre vs tutacağın dosyalar olursa)
+.env
+.env.local
+
+# Log dosyaları
+*.log
+logs/
