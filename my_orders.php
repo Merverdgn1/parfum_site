@@ -12,12 +12,24 @@ $userId = (int) $_SESSION['user']['id'];
 
 // Kullanıcının siparişlerini çek
 $stmt = $mysqli->prepare(
-    "SELECT o.id, o.total_amount, o.created_at,
-            COUNT(oi.id) AS item_count
+    "SELECT 
+        o.id, 
+        o.total_amount, 
+        o.created_at,
+        o.status,
+        o.payment_method,
+        o.shipping_company,
+        COUNT(oi.id) AS item_count
      FROM orders o
      LEFT JOIN order_items oi ON oi.order_id = o.id
      WHERE o.user_id = ?
-     GROUP BY o.id, o.total_amount, o.created_at
+     GROUP BY 
+        o.id, 
+        o.total_amount, 
+        o.created_at,
+        o.status,
+        o.payment_method,
+        o.shipping_company
      ORDER BY o.created_at DESC"
 );
 $stmt->bind_param("i", $userId);
@@ -91,6 +103,11 @@ if (isset($_SESSION['user']) && isset($mysqli)) {
                 <li class="nav-item">
                     <a class="nav-link active" href="my_orders.php">Siparişlerim</a>
                 </li>
+                <?php if (isset($_SESSION['user'])): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="my_favorites.php">Favorilerim</a>
+                    </li>
+                <?php endif; ?>
             </ul>
 
             <ul class="navbar-nav ms-auto">
@@ -101,10 +118,10 @@ if (isset($_SESSION['user']) && isset($mysqli)) {
                 <?php endif; ?>
 
                 <li class="nav-item d-flex align-items-center">
-    <span class="navbar-text me-2 mb-0">
-        Merhaba, <?php echo htmlspecialchars($_SESSION['user']['name']); ?>
-    </span>
-</li>
+                    <span class="navbar-text me-2 mb-0">
+                        Merhaba, <?php echo htmlspecialchars($_SESSION['user']['name']); ?>
+                    </span>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link" href="logout.php">Çıkış</a>
@@ -132,18 +149,32 @@ if (isset($_SESSION['user']) && isset($mysqli)) {
                             <th>Tarih</th>
                             <th>Ürün Sayısı</th>
                             <th>Toplam Tutar</th>
-                            <th></th>
+                            <th>Durum</th>
+                            <th>Detay</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($orders as $o): ?>
                             <tr>
-                                <td>#<?php echo $o['id']; ?></td>
-                                <td><?php echo $o['created_at']; ?></td>
-                                <td><?php echo $o['item_count']; ?></td>
+                                <td>#<?php echo (int)$o['id']; ?></td>
+                                <td><?php echo htmlspecialchars($o['created_at']); ?></td>
+                                <td><?php echo (int)$o['item_count']; ?></td>
                                 <td>₺<?php echo number_format($o['total_amount'], 2, ',', '.'); ?></td>
                                 <td>
-                                    <a href="order_success.php?order_id=<?php echo $o['id']; ?>" 
+                                    <?php
+                                        $status = $o['status'] ?? 'Bilinmiyor';
+                                        $badgeClass = 'bg-secondary';
+                                        if ($status === 'Hazırlanıyor')      $badgeClass = 'bg-warning';
+                                        elseif ($status === 'Kargoya Verildi') $badgeClass = 'bg-info';
+                                        elseif ($status === 'Tamamlandı')    $badgeClass = 'bg-success';
+                                        elseif ($status === 'İptal Edildi')  $badgeClass = 'bg-danger';
+                                    ?>
+                                    <span class="badge <?php echo $badgeClass; ?>">
+                                        <?php echo htmlspecialchars($status); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="order_detail.php?id=<?php echo (int)$o['id']; ?>" 
                                        class="btn btn-sm btn-outline-primary">
                                         Detay
                                     </a>
