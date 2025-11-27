@@ -1,0 +1,142 @@
+/* GENEL AYARLAR */
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f5f5f7;
+    color: #222;
+}
+
+/* Linklerin standart görünümü */
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* NAVBAR */
+.navbar {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-brand {
+    letter-spacing: 0.5px;
+}
+
+/* HERO BÖLÜMÜ */
+.hero-section {
+    background: linear-gradient(135deg, #f8f0ff, #f9f9ff);
+}
+
+.hero-section h1 {
+    color: #222;
+}
+
+.hero-section p {
+    color: #555;
+}
+
+/* BUTONLAR */
+.btn-primary {
+    background: linear-gradient(135deg, #6f42c1, #9b59b6);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a32a3, #8e44ad);
+}
+
+.btn-outline-primary {
+    border-color: #6f42c1;
+    color: #6f42c1;
+}
+
+.btn-outline-primary:hover {
+    background-color: #6f42c1;
+    color: #fff;
+}
+
+/* KATEGORİ BUTONLARI */
+.btn-outline-secondary {
+    border-radius: 999px;
+}
+
+/* KARTLAR (ÜRÜNLER) */
+.card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.card img {
+    max-height: 220px;
+    object-fit: cover;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ÜRÜN BAŞLIĞI */
+.card-title {
+    font-weight: 600;
+}
+
+/* BADGE (Kategori etiketi) */
+.badge.bg-secondary {
+    background-color: #6f42c1 !important;
+}
+
+/* TABLOLAR (Sepet, Siparişlerim vb.) */
+.table thead th {
+    border-bottom-width: 2px;
+}
+
+.table tfoot th {
+    border-top-width: 2px;
+}
+
+/* AUTH SAYFALARI (login/register) KUTUSU İÇİN GENEL */
+main .container[style*="max-width"] {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* FORM ELEMENTLERİ */
+.form-control {
+    border-radius: 10px;
+}
+
+.form-control:focus {
+    border-color: #6f42c1;
+    box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
+}
+
+/* FOOTER */
+footer {
+    margin-top: auto;
+    font-size: 0.9rem;
+}
+
+/* SİPARİŞ BAŞARI SAYFASI EMOJİ vs. */
+h1.h3.fw-bold.mb-3 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* RESPONSIVE KÜÇÜK DOKUNUŞLAR */
+@media (max-width: 576px) {
+    .hero-section {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+    }
+
+    main .container[style*="max-width"] {
+        padding: 1.5rem 1.25rem;
+    }
+}
